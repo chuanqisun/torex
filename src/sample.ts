@@ -5,7 +5,7 @@
  * long strings will be cropped
  * arrays will be cropped to 3 elements (head, middle, tail)
  */
-export function sampleJsonContent(object: any): any {
+export function sample(object: any): any {
   const type = typeof object;
   switch (type) {
     case "object":
@@ -15,11 +15,11 @@ export function sampleJsonContent(object: any): any {
         // sample head, middle, tail
         if (!object.length) return [];
         const uniqueSamples = threePointSampleArrayItems(object);
-        return uniqueSamples.map(sampleJsonContent);
+        return uniqueSamples.map(sample);
       } else {
         return Object.fromEntries(
           Object.entries(object).map(([key, value]) => {
-            return [key, sampleJsonContent(value)];
+            return [key, sample(value)];
           })
         );
       }
