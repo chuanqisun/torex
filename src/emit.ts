@@ -130,7 +130,7 @@ interface DeclarationConfig {
   rValue: string;
   isInterface?: boolean;
 }
-export function renderDeclaration(config: DeclarationConfig): string {
+function renderDeclaration(config: DeclarationConfig): string {
   return config.isInterface ? `interface ${config.lValue} ${config.rValue}` : `type ${config.lValue} = ${config.rValue};`;
 }
 
