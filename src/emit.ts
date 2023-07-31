@@ -178,7 +178,7 @@ function getPathNameGenerator(usedNames: Set<string>) {
   };
 }
 
-export function pathToName(path: (string | 0)[], prefix?: string) {
+function pathToName(path: (string | 0)[], prefix?: string) {
   return `${prefix ?? ""}${path.map(indexToItemKey).join("")}`;
 }
 
