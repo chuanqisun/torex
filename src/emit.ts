@@ -101,9 +101,10 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
       : `{\n${keyedChildEntries.map(([k, v]) => `  ${renderKey(k)}${node.requiredKeys?.has(k) ? "" : "?"}: ${v};`).join("\n")}\n}`;
 
     if (hasEmptyObject || config?.isRoot) {
-      // eager declaration as right-hand side
+      // Treat empty or root level object as a self contained identifier
       identifiers.push(objectLiteral);
     } else {
+      // Other objects are always references to a name along with its own declaration
       identifiers.push(config.pathNameGenerator(path, config.interfacePrefix));
 
       const declaration = renderDeclaration({
