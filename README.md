@@ -1,3 +1,3 @@
-# typr
+# Jorex
 
-Generate TypeScript types from JavaScript object
+JavaScript Object Reflection: Generate TypeScript interface and sample data from JavaScript objects.
