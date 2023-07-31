@@ -9,8 +9,11 @@ export interface EmitConfig {
 
 /**
  * Future improvements:
- * 1. When there is `any` in the union, remove all other types and declarations
- * 2. Deduplicate declarations for different fields
+ * 1. Deduplicate declarations for different fields
+ * 2. Customize {} and [] types
+ * 3. Customize export: none|root|all
+ * 4. Customize type vs interface
+ * 5. Customize semicolon
  */
 
 export function emit(node: TypeNode, config?: EmitConfig): string {
