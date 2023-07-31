@@ -1,5 +1,5 @@
 {
-  "name": "typer",
+  "name": "typr",
   "version": "1.0.0",
   "description": "Generates TypeScript types from JavaScript object",
   "main": "src/index.ts",
