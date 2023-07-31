@@ -17,7 +17,9 @@ export function emit(node: TypeNode, config?: EmitConfig): string {
   if (!node.types.size) throw new Error("Root node is missing type");
 
   const { rootName, interfacePrefix } = { rootName: "Root", interfacePrefix: "I", ...config };
-  const { declarations } = getIdentifiers([rootName], node, { declarePrimitive: true, inlineObject: true, interfacePrefix });
+  const pathNameGenerator = memoize(getPathNameGenerator(new Set()));
+
+  const { declarations } = getIdentifiers([rootName], node, { declarePrimitive: true, inlineObject: true, interfacePrefix, pathNameGenerator });
 
   return declarations.join("\n\n");
 }
@@ -26,9 +28,8 @@ type Path = (0 | string)[];
 interface GetIdentifiersConfig {
   declarePrimitive?: boolean;
   inlineObject?: boolean;
-  pathNameGenerator?: (path: Path, prefix?: string) => string;
-  rootPrefix?: string;
-  interfacePrefix?: string;
+  pathNameGenerator: (path: Path, prefix?: string) => string;
+  interfacePrefix: string;
 }
 
 /**
@@ -43,20 +44,22 @@ interface GetIdentifiersConfig {
  * Arrays ::= Primitives"[]" | Arrays"[]" | EmptyObject"[]" | GroupedUnions"[]"
  * EmptyObject ::= "{}" | "[]"
  */
-function getIdentifiers(path: Path, node: TypeNode, config?: GetIdentifiersConfig): { identifiers: string[]; declarations: string[] } {
+function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig): { identifiers: string[]; declarations: string[] } {
   const identifiers = [...node.types].filter(isPrimitive);
   const declarations: string[] = [];
   const keyedChildren = [...(node.children?.entries() ?? [])].filter(([key]) => typeof key === "string");
   const indexedChildren = [...(node.children?.entries() ?? [])].filter(([key]) => typeof key === "number");
   const hasEmptyArray = node.types.has("array") && !indexedChildren.length;
   const hasEmptyObject = node.types.has("object") && !keyedChildren.length;
-  const pathNameGenerator = memoize(config?.pathNameGenerator ?? getPathNameGenerator(new Set()));
 
   const { indexedChildIndentifiers, indexedChildDeclarations } = indexedChildren.reduce(
     (result, item) => {
       const [key, childNode] = item;
       const childPath = [...path, key];
-      const { identifiers, declarations } = getIdentifiers(childPath, childNode, { pathNameGenerator });
+      const { identifiers, declarations } = getIdentifiers(childPath, childNode, {
+        pathNameGenerator: config.pathNameGenerator,
+        interfacePrefix: config.interfacePrefix,
+      });
 
       result.indexedChildIndentifiers.push(`${groupedUnion(identifiers)}[]`);
       result.indexedChildDeclarations.push(...declarations);
@@ -76,7 +79,10 @@ function getIdentifiers(path: Path, node: TypeNode, config?: GetIdentifiersConfi
     (result, item) => {
       const [key, childNode] = item;
       const childPath = [...path, key];
-      const { identifiers, declarations } = getIdentifiers(childPath, childNode, { pathNameGenerator });
+      const { identifiers, declarations } = getIdentifiers(childPath, childNode, {
+        pathNameGenerator: config.pathNameGenerator,
+        interfacePrefix: config.interfacePrefix,
+      });
       result.keyedChildEntries.push([key as string, inlineUnion(identifiers)]);
       result.keyedChildDeclarations.push(...declarations);
 
@@ -96,9 +102,9 @@ function getIdentifiers(path: Path, node: TypeNode, config?: GetIdentifiersConfi
     if (hasEmptyObject || config?.inlineObject) {
       identifiers.push(keyedChildIdentifiers);
     } else {
-      identifiers.push(pathNameGenerator(path, "I"));
+      identifiers.push(config.pathNameGenerator(path, config?.interfacePrefix ?? "I"));
       const declaration = renderDeclaration({
-        lValue: pathNameGenerator(path, "I"),
+        lValue: config.pathNameGenerator(path, config?.interfacePrefix ?? "I"),
         rValue: renderIdentifiers([keyedChildIdentifiers]),
         isInterface: true,
       });
@@ -111,7 +117,7 @@ function getIdentifiers(path: Path, node: TypeNode, config?: GetIdentifiersConfi
     // HACK: render interface if and only if identifer is a single object
     const isInterface = identifiers.length === 1 && identifiers[0].startsWith("{");
     const declaration = renderDeclaration({
-      lValue: pathNameGenerator(path, isInterface ? "I" : ""),
+      lValue: config.pathNameGenerator(path, isInterface ? config?.interfacePrefix ?? "I" : ""),
       rValue: renderIdentifiers(identifiers),
       isInterface,
     });

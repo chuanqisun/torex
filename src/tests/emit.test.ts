@@ -176,7 +176,7 @@ interface MyRoot {
     assertEmitter(
       { a: 1 },
       `
-interface SpecialType {
+interface MySpecialType {
   a: number;
 }`,
       {
@@ -191,18 +191,5 @@ function assertEmitter(input: any, expected: string, config?: EmitConfig) {
   const jsonTypeNode = parse(input);
   const declarations = emit(jsonTypeNode, config);
 
-  try {
-    assert.deepEqual(declarations.trim(), expected.trim());
-  } catch (error) {
-    console.error((error as any).name);
-    console.log(`
-=== Input ===
-${JSON.stringify(input, null, 2)}
-
-=== Expected ===
-${expected.trim()}
-
-=== Actual ===
-${declarations}`);
-  }
+  assert.deepEqual(declarations.trim(), expected.trim());
 }
