@@ -19,15 +19,14 @@ export function emit(node: TypeNode, config?: EmitConfig): string {
   const { rootName, interfacePrefix } = { rootName: "Root", interfacePrefix: "I", ...config };
   const pathNameGenerator = memoize(getPathNameGenerator(new Set()));
 
-  const { declarations } = getIdentifiers([rootName], node, { declarePrimitive: true, inlineObject: true, interfacePrefix, pathNameGenerator });
+  const { declarations } = getIdentifiers([rootName], node, { isRoot: true, interfacePrefix, pathNameGenerator });
 
   return declarations.join("\n\n");
 }
 
 type Path = (0 | string)[];
 interface GetIdentifiersConfig {
-  declarePrimitive?: boolean;
-  inlineObject?: boolean;
+  isRoot?: boolean;
   pathNameGenerator: (path: Path, prefix?: string) => string;
   interfacePrefix: string;
 }
@@ -50,7 +49,8 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
   const keyedChildren = [...(node.children?.entries() ?? [])].filter(([key]) => typeof key === "string");
   const indexedChildren = [...(node.children?.entries() ?? [])].filter(([key]) => typeof key === "number");
   const hasEmptyArray = node.types.has("array") && !indexedChildren.length;
-  const hasEmptyObject = node.types.has("object") && !keyedChildren.length;
+  const hasObject = node.types.has("object");
+  const hasEmptyObject = hasObject && !keyedChildren.length;
 
   const { indexedChildIndentifiers, indexedChildDeclarations } = indexedChildren.reduce(
     (result, item) => {
@@ -95,17 +95,20 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
   );
   declarations.push(...keyedChildDeclarations);
 
-  if (hasEmptyObject || keyedChildEntries.length) {
-    const keyedChildIdentifiers = hasEmptyObject
+  if (hasObject) {
+    const objectLiteral = hasEmptyObject
       ? "any"
       : `{\n${keyedChildEntries.map(([k, v]) => `  ${renderKey(k)}${node.requiredKeys?.has(k) ? "" : "?"}: ${v};`).join("\n")}\n}`;
-    if (hasEmptyObject || config?.inlineObject) {
-      identifiers.push(keyedChildIdentifiers);
+
+    if (hasEmptyObject || config?.isRoot) {
+      // eager declaration as right-hand side
+      identifiers.push(objectLiteral);
     } else {
-      identifiers.push(config.pathNameGenerator(path, config?.interfacePrefix ?? "I"));
+      identifiers.push(config.pathNameGenerator(path, config.interfacePrefix));
+
       const declaration = renderDeclaration({
-        lValue: config.pathNameGenerator(path, config?.interfacePrefix ?? "I"),
-        rValue: renderIdentifiers([keyedChildIdentifiers]),
+        lValue: config.pathNameGenerator(path, config.interfacePrefix),
+        rValue: renderIdentifiers([objectLiteral]),
         isInterface: true,
       });
 
@@ -113,11 +116,11 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
     }
   }
 
-  if (identifiers.length > 0 && config?.declarePrimitive) {
+  if (identifiers.length > 0 && config?.isRoot) {
     // HACK: render interface if and only if identifer is a single object
     const isInterface = identifiers.length === 1 && identifiers[0].startsWith("{");
     const declaration = renderDeclaration({
-      lValue: config.pathNameGenerator(path, isInterface ? config?.interfacePrefix ?? "I" : ""),
+      lValue: config.pathNameGenerator(path, isInterface ? config.interfacePrefix : ""),
       rValue: renderIdentifiers(identifiers),
       isInterface,
     });
