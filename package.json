@@ -1,7 +1,7 @@
 {
-  "name": "burstio",
+  "name": "typer",
   "version": "1.0.0",
-  "description": "High throughput Azure OpenAI Chat Client",
+  "description": "Generates TypeScript types from JavaScript object",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.4.1",
     "tsx": "^3.12.7"

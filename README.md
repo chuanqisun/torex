@@ -1,3 +1,3 @@
-# burstio
+# typer
 
-High throughput Azure OpenAI Chat Client
+Generate TypeScript types from JavaScript object
