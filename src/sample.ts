@@ -1,6 +1,10 @@
-// Walk the entire json tree and output a reduced json object by sampling the input
-// long strings will be cropped
-// arrays will be cropped to 3 elements (head, middle, tail)
+/**
+ * A utility function for sampling data
+ *
+ * Walk the entire json tree and output a reduced json object by sampling the input
+ * long strings will be cropped
+ * arrays will be cropped to 3 elements (head, middle, tail)
+ */
 export function sampleJsonContent(object: any): any {
   const type = typeof object;
   switch (type) {
