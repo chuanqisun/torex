@@ -30,15 +30,27 @@ interface GetIdentifiersConfig {
   rootPrefix?: string;
   interfacePrefix?: string;
 }
+
+/**
+ * Get identifiers and dependencies declarations
+ *
+ * A rough grammar (might contain bugs):
+ *
+ * Identifier ::= Primitives | Arrays | EmptyObjects | Unions
+ * Unions: Identifier ("|" Identifier)*
+ * GroupedUnions: "("Unions")"
+ * Primitives ::= "string" | "number" | "boolean" | "null" | "undefined"
+ * Arrays ::= Primitives"[]" | Arrays"[]" | EmptyObject"[]" | GroupedUnions"[]"
+ * EmptyObject ::= "{}" | "[]"
+ */
 function getIdentifiers(path: Path, node: TypeNode, config?: GetIdentifiersConfig): { identifiers: string[]; declarations: string[] } {
-  // identifiers are primitives, arrays, or empty objects: all primitives, {}, [], and array of irreducible types
-  const pathNameGenerator = memoize(config?.pathNameGenerator ?? getPathNameGenerator(new Set()));
   const identifiers = [...node.types].filter(isPrimitive);
   const declarations: string[] = [];
   const keyedChildren = [...(node.children?.entries() ?? [])].filter(([key]) => typeof key === "string");
   const indexedChildren = [...(node.children?.entries() ?? [])].filter(([key]) => typeof key === "number");
   const hasEmptyArray = node.types.has("array") && !indexedChildren.length;
   const hasEmptyObject = node.types.has("object") && !keyedChildren.length;
+  const pathNameGenerator = memoize(config?.pathNameGenerator ?? getPathNameGenerator(new Set()));
 
   const { indexedChildIndentifiers, indexedChildDeclarations } = indexedChildren.reduce(
     (result, item) => {
