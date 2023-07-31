@@ -208,7 +208,7 @@ function inlineUnion(items: string[]): string {
 }
 
 /**
- * Wrapper the inner function. Call once and return its result for all subsequent calls until the args have changed
+ * Wrap the inner function. Call once and return its result for all subsequent calls until the args have changed
  */
 function memoize<T extends any[], R>(fn: (...args: T) => R) {
   let lastArgs: T | undefined;
