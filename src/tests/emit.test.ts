@@ -9,7 +9,7 @@ describe("emit", () => {
   });
 
   it("empty objects", () => {
-    assertEmitter({}, `type Root = any;`);
+    assertEmitter({}, `type Root = Record<string, any>;`);
     assertEmitter([], `type Root = any[];`);
   });
 
@@ -47,7 +47,7 @@ interface IRootA {
 type Root = IRootItem[];
 
 interface IRootItem {
-  a: any[];
+  a: Record<string, any>[];
 }
 `
     );
@@ -60,6 +60,16 @@ type Root = IRootItem[];
 
 interface IRootItem {
   a?: number;
+}`
+    );
+
+    assertEmitter(
+      [{ a: [] }, { a: [1] }],
+      `
+type Root = IRootItem[];
+
+interface IRootItem {
+  a: number[];
 }`
     );
 

@@ -69,7 +69,10 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
       indexedChildDeclarations: [] as string[],
     }
   );
+
+  if (hasEmptyObject) identifiers.push("Record<string, any>");
   if (hasEmptyArray) identifiers.push("any[]");
+
   identifiers.push(...indexedChildIndentifiers);
   declarations.push(...indexedChildDeclarations);
 
@@ -89,8 +92,6 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
     }
   );
   declarations.push(...keyedChildDeclarations);
-
-  if (hasEmptyObject) identifiers.push("any");
 
   if (keyedChildEntries.length) {
     const objectLiteral = `{\n${keyedChildEntries.map(([k, v]) => `  ${renderKey(k)}${node.requiredKeys?.has(k) ? "" : "?"}: ${v};`).join("\n")}\n}`;
