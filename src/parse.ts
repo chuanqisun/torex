@@ -9,6 +9,7 @@ export interface TypeNode {
 }
 
 export function parse(data: any): TypeNode {
+  const parentLinks = new Map<TypeNode, TypeNode>();
   const missedRevisitKeys = new Map<TypeNode, Set<string>>();
   const visitedNodes = new Set<TypeNode>();
 
@@ -30,6 +31,7 @@ export function parse(data: any): TypeNode {
         childNode.types.add(event.valueType);
 
         // mark key as visited, if we are re-visiting
+        // note that when visiting leaf, the current node is actually the parent
         if (key !== 0) missedRevisitKeys.get(currentNode)?.delete(key);
 
         currentNode.children!.set(key, childNode);
@@ -42,6 +44,9 @@ export function parse(data: any): TypeNode {
         openedNode.types.add(event.valueType);
         const isOpenObject = event.valueType === "object";
 
+        // track child-parent relationship
+        parentLinks.set(openedNode, currentNode);
+
         // start tracking required re-visits on object
         if (isOpenObject) missedRevisitKeys.set(openedNode, new Set(openedNode.requiredKeys));
 
@@ -51,9 +56,18 @@ export function parse(data: any): TypeNode {
       }
       case "closeObject": {
         const closedNode = (currentNode = stack.pop()!);
-        const isCloseObject = event.valueType === "object";
 
-        if (isCloseObject) {
+        const isCloseKeyedChild = typeof event.key === "string";
+        if (isCloseKeyedChild) {
+          // since we don't emit visit on container nodes, we use close event to mark key as visited
+          // mark key as visited from its parent
+          const parent = parentLinks.get(closedNode);
+          if (parent) missedRevisitKeys.get(parent)?.delete(event.key as string);
+        }
+
+        const isCloseKeyedParent = event.valueType === "object";
+
+        if (isCloseKeyedParent) {
           // Delete missed keys from required keys
           const missedKeys = missedRevisitKeys.get(closedNode);
           missedKeys?.forEach((key) => {

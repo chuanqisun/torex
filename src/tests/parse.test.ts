@@ -119,6 +119,18 @@ root: array
     a: number
   `
     );
+
+    assertTypeTree(
+      [{ a: [] }, { a: [1] }],
+      `
+root: array
+  0: object
+  requiredKeys: a
+    a: array
+      0: number
+    `
+    );
+
     assertTypeTree(
       [{ a: 1 }, { a: undefined }],
       `
@@ -167,6 +179,7 @@ root: array
       `
 root: array
   0: object
+  requiredKeys: a
     a: object
       x: number
   `
@@ -186,7 +199,24 @@ root: array
 
 function assertTypeTree(input: any, expected: string) {
   const actual = prettyPrintNodeLine(parse(input)).join("\n");
-  assert.strictEqual(actual, expected.trim());
+  try {
+    assert.strictEqual(actual, expected.trim());
+  } catch (e) {
+    console.log(
+      `
+=== Input ===
+${JSON.stringify(input, null, 2)}
+
+=== Expected ===
+${expected.trim()}
+
+=== Actual ===
+${actual}
+    `.trim()
+    );
+
+    throw e;
+  }
 }
 
 function prettyPrintNodeLine(node: TypeNode, indent = 2, key: string | 0 = "root"): string[] {
