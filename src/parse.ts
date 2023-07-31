@@ -1,4 +1,4 @@
-import { jsonTreeWalk } from "./tree-walk";
+import { treeWalk } from "./tree-walk";
 
 export interface TypeNode {
   children?: Map<string | 0, TypeNode>;
@@ -18,7 +18,7 @@ export function parse(data: any): TypeNode {
   // This guarantees that
   // 1. "visitLeaf" events will always be preceded by "openObject" events
   // 2. at least one "openObject" event will be emitted
-  const events = jsonTreeWalk({ _: data });
+  const events = treeWalk({ _: data });
 
   for (const event of events) {
     currentNode = stack[stack.length - 1];
