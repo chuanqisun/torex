@@ -191,5 +191,22 @@ function assertEmitter(input: any, expected: string, config?: EmitConfig) {
   const jsonTypeNode = parse(input);
   const declarations = emit(jsonTypeNode, config);
 
-  assert.deepEqual(declarations.trim(), expected.trim());
+  try {
+    assert.deepEqual(declarations.trim(), expected.trim());
+  } catch (e) {
+    console.log(
+      `
+=== Input ===
+${JSON.stringify(input, null, 2)}
+
+=== Expected ===
+${expected}
+
+=== Actual ===
+${declarations}
+    `.trim()
+    );
+
+    throw e;
+  }
 }
