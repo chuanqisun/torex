@@ -52,6 +52,7 @@ interface IRootItem {
 `
     );
     assertEmitter([[], [], []], `type Root = any[][];`);
+
     assertEmitter(
       [{ a: 1 }, {}, {}],
       `
@@ -59,6 +60,16 @@ type Root = IRootItem[];
 
 interface IRootItem {
   a?: number;
+}`
+    );
+
+    assertEmitter(
+      [{ a: 1 }, ""],
+      `
+type Root = (string | IRootItem)[];
+
+interface IRootItem {
+  a: number;
 }`
     );
   });
