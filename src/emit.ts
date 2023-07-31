@@ -97,10 +97,8 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
   declarations.push(...keyedChildDeclarations);
 
   if (keyedChildEntries.length) {
+    // render objects as identifer + declaration
     const objectLiteral = `{\n${keyedChildEntries.map(([k, v]) => `  ${renderKey(k)}${node.requiredKeys?.has(k) ? "" : "?"}: ${v};`).join("\n")}\n}`;
-
-    // Other objects are always references to a name along with its own declaration
-    identifiers.push(config.pathNameGenerator(path, config.interfacePrefix));
 
     const declaration = renderDeclaration({
       lValue: config.pathNameGenerator(path, config.interfacePrefix),
@@ -108,8 +106,10 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
       isInterface: true,
     });
 
+    identifiers.push(config.pathNameGenerator(path, config.interfacePrefix));
     declarations.unshift(declaration);
   } else if (identifiers.length > 0 && isRoot) {
+    // Root needs to collect and render any identifiers from any child level
     // HACK: render interface if and only if identifer is a single object
     const isInterface = identifiers.length === 1 && identifiers[0].startsWith("{");
     const declaration = renderDeclaration({
