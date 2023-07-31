@@ -51,15 +51,13 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
   const hasEmptyArray = node.types.has("array") && !indexedChildren.length;
   const hasObject = node.types.has("object");
   const hasEmptyObject = hasObject && !keyedChildren.length;
+  const { isRoot, ...childConfig } = config;
 
   const { indexedChildIndentifiers, indexedChildDeclarations } = indexedChildren.reduce(
     (result, item) => {
       const [key, childNode] = item;
       const childPath = [...path, key];
-      const { identifiers, declarations } = getIdentifiers(childPath, childNode, {
-        pathNameGenerator: config.pathNameGenerator,
-        interfacePrefix: config.interfacePrefix,
-      });
+      const { identifiers, declarations } = getIdentifiers(childPath, childNode, childConfig);
 
       result.indexedChildIndentifiers.push(`${groupedUnion(identifiers)}[]`);
       result.indexedChildDeclarations.push(...declarations);
@@ -79,10 +77,7 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
     (result, item) => {
       const [key, childNode] = item;
       const childPath = [...path, key];
-      const { identifiers, declarations } = getIdentifiers(childPath, childNode, {
-        pathNameGenerator: config.pathNameGenerator,
-        interfacePrefix: config.interfacePrefix,
-      });
+      const { identifiers, declarations } = getIdentifiers(childPath, childNode, childConfig);
       result.keyedChildEntries.push([key as string, inlineUnion(identifiers)]);
       result.keyedChildDeclarations.push(...declarations);
 
@@ -100,7 +95,7 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
       ? "any"
       : `{\n${keyedChildEntries.map(([k, v]) => `  ${renderKey(k)}${node.requiredKeys?.has(k) ? "" : "?"}: ${v};`).join("\n")}\n}`;
 
-    if (hasEmptyObject || config?.isRoot) {
+    if (hasEmptyObject || isRoot) {
       // Treat empty or root level object as a self contained identifier
       identifiers.push(objectLiteral);
     } else {
@@ -117,7 +112,7 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
     }
   }
 
-  if (identifiers.length > 0 && config?.isRoot) {
+  if (identifiers.length > 0 && isRoot) {
     // HACK: render interface if and only if identifer is a single object
     const isInterface = identifiers.length === 1 && identifiers[0].startsWith("{");
     const declaration = renderDeclaration({
