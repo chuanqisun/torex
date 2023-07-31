@@ -90,29 +90,22 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
   );
   declarations.push(...keyedChildDeclarations);
 
-  if (hasObject) {
-    const objectLiteral = hasEmptyObject
-      ? "any"
-      : `{\n${keyedChildEntries.map(([k, v]) => `  ${renderKey(k)}${node.requiredKeys?.has(k) ? "" : "?"}: ${v};`).join("\n")}\n}`;
+  if (hasEmptyObject) identifiers.push("any");
 
-    if (hasEmptyObject || isRoot) {
-      // Treat empty or root level object as a self contained identifier
-      identifiers.push(objectLiteral);
-    } else {
-      // Other objects are always references to a name along with its own declaration
-      identifiers.push(config.pathNameGenerator(path, config.interfacePrefix));
+  if (keyedChildEntries.length) {
+    const objectLiteral = `{\n${keyedChildEntries.map(([k, v]) => `  ${renderKey(k)}${node.requiredKeys?.has(k) ? "" : "?"}: ${v};`).join("\n")}\n}`;
 
-      const declaration = renderDeclaration({
-        lValue: config.pathNameGenerator(path, config.interfacePrefix),
-        rValue: renderIdentifiers([objectLiteral]),
-        isInterface: true,
-      });
+    // Other objects are always references to a name along with its own declaration
+    identifiers.push(config.pathNameGenerator(path, config.interfacePrefix));
 
-      declarations.unshift(declaration);
-    }
-  }
+    const declaration = renderDeclaration({
+      lValue: config.pathNameGenerator(path, config.interfacePrefix),
+      rValue: renderIdentifiers([objectLiteral]),
+      isInterface: true,
+    });
 
-  if (identifiers.length > 0 && isRoot) {
+    declarations.unshift(declaration);
+  } else if (identifiers.length > 0 && isRoot) {
     // HACK: render interface if and only if identifer is a single object
     const isInterface = identifiers.length === 1 && identifiers[0].startsWith("{");
     const declaration = renderDeclaration({
