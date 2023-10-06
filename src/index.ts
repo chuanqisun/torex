@@ -11,23 +11,18 @@ export function getSample(input: any): string {
 }
 
 export interface Options {
-  typeName?: string;
+  rootName?: string;
   scope?: "root" | "root-item";
 }
 
 export function getType(input: any, options?: Options): string {
-  const finalOptions = {
-    typeName: "Root",
-    scope: "root",
-  };
-
-  if (finalOptions.scope === "root-item") {
+  if (options?.scope === "root-item") {
     if (!Array.isArray(input)) throw new Error("Input is not an array");
-    return getItemType(input, { typeName: options?.typeName ?? "Item", interfacePrefix: "I" });
+    return getItemType(input, { typeName: options?.rootName ?? "Item", interfacePrefix: "I" });
   }
 
   const root = parse(input);
-  const code = emit(root, { rootName: options?.typeName ?? "Root", interfacePrefix: "I" });
+  const code = emit(root, { rootName: options?.rootName ?? "Root", interfacePrefix: "I" });
   return code;
 }
 
