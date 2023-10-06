@@ -1,3 +1,3 @@
-# 🦖 Jorex 
+# 🦖 Torex
 
-JavaScript Object Reflection: Generate TypeScript interface and sample data from JavaScript objects.
+**Typed Object Reflection**: Infer TypeScript interface from JSON
