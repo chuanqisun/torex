@@ -10,34 +10,29 @@ Install
 npm i torex
 ```
 
-Use
+Examples
 
 ```typescript
 import { getType } from "torex";
 
-/* Object */
-console.log(
-  getType({
-    myKey: "myValue",
-  })
-);
-/* Output:
+getType({
+  myKey: "myValue",
+})
+/*
 interface IRoot {
   myKey: string;
 }
 */
 
-/* Customize object root name */
-console.log(getType({ myKey: "myValue" }, { rootName: "MyObject" }));
-/* Output:
+getType({ myKey: "myValue" }, { rootName: "MyObject" });
+/*
 interface IMyObject {
   myKey: string;
 }
 */
 
-/* Array */
-console.log(getType([{ name: "a" }, { name: "b", size: 42 }]));
-/* Output
+getType([{ name: "a" }, { name: "b", size: 42 }]);
+/*
 type Root = IRootItem[];
 
 interface IRootItem {
@@ -46,9 +41,8 @@ interface IRootItem {
 }
 */
 
-/* Array item */
-console.log(getType([{ name: "a" }, { name: "b", size: 42 }], { scope: "root-item" }));
-/* Output
+getType([{ name: "a" }, { name: "b", size: 42 }], { scope: "root-item" });
+/*
 type Root = IRootItem[];
 
 interface IRootItem {
@@ -57,9 +51,8 @@ interface IRootItem {
 }
 */
 
-/* Customize array item root name */
-console.log(getType([{ name: "a" }, { name: "b", size: 42 }], { rootName: "MyObject", scope: "root-item" }));
-/* Output
+getType([{ name: "a" }, { name: "b", size: 42 }], { rootName: "MyObject", scope: "root-item" }));
+/*
 interface IMyObject {
   name: string;
   size?: number;
