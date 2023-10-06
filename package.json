@@ -1,11 +1,16 @@
 {
-  "name": "jorex",
-  "version": "1.0.0",
-  "description": "JavaScript Object Reflection",
+  "name": "torex",
+  "version": "0.0.1",
+  "description": "Typed Object Reflection",
   "main": "src/index.ts",
+  "homepage": "https://github.com/chuanqisun/torex",
   "types": "src/index.ts",
   "scripts": {
     "test": "tsx ./src/index.test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chuanqisun/torex.git"
   },
   "keywords": [],
   "author": "",
