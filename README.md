@@ -15,7 +15,7 @@ Use
 ```typescript
 import { getType } from "torex";
 
-/* Simple object */
+/* Object */
 console.log(
   getType({
     myKey: "myValue",
@@ -27,7 +27,7 @@ interface IRoot {
 }
 */
 
-/* Customize root type name */
+/* Customize object root name */
 console.log(getType({ myKey: "myValue" }, { rootName: "MyObject" }));
 /* Output:
 interface IMyObject {
@@ -35,7 +35,7 @@ interface IMyObject {
 }
 */
 
-/* Simple array */
+/* Array */
 console.log(getType([{ name: "a" }, { name: "b", size: 42 }]));
 /* Output
 type Root = IRootItem[];
@@ -46,7 +46,7 @@ interface IRootItem {
 }
 */
 
-/* Array item only */
+/* Array item */
 console.log(getType([{ name: "a" }, { name: "b", size: 42 }], { scope: "root-item" }));
 /* Output
 type Root = IRootItem[];
@@ -57,7 +57,7 @@ interface IRootItem {
 }
 */
 
-/* Customize array item type name */
+/* Customize array item root name */
 console.log(getType([{ name: "a" }, { name: "b", size: 42 }], { rootName: "MyObject", scope: "root-item" }));
 /* Output
 interface IMyObject {

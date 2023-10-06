@@ -7,7 +7,7 @@ function assertReflection(input: any, options: Options, output: string) {
 }
 
 describe("e2e", () => {
-  it("Simple object", () => {
+  it("Object", () => {
     assertReflection(
       { myKey: "myValue" },
       {},
@@ -18,7 +18,7 @@ interface IRoot {
     );
   });
 
-  it("Customize root type name", () => {
+  it("Customize object root name", () => {
     assertReflection(
       { myKey: "myValue" },
       { rootName: "MyObject" },
@@ -30,7 +30,22 @@ interface IMyObject {
     );
   });
 
-  it("Simple array", () => {
+  it("Array", () => {
+    assertReflection(
+      [{ name: "a" }, { name: "b", size: 42 }],
+      {},
+      `
+type Root = IRootItem[];
+
+interface IRootItem {
+  name: string;
+  size?: number;
+}
+`
+    );
+  });
+
+  it("Array item", () => {
     assertReflection(
       [{ name: "a" }, { name: "b", size: 42 }],
       { scope: "root-item" },
@@ -43,7 +58,7 @@ interface IItem {
     );
   });
 
-  it("Customize array item type name", () => {
+  it("Customize array item root name", () => {
     assertReflection(
       [{ name: "a" }, { name: "b", size: 42 }],
       { rootName: "MyItem", scope: "root-item" },
