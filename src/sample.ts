@@ -5,7 +5,16 @@
  * long strings will be cropped
  * arrays will be cropped to 3 elements (head, middle, tail)
  */
-export function sample(object: any): any {
+export interface SampleOptions {
+  /**
+   * @default 48
+   */
+  maxTextLength?: number;
+}
+
+export function sample(object: any, options?: SampleOptions): any {
+  const { maxTextLength = 48 } = { ...options };
+
   const type = typeof object;
   switch (type) {
     case "object":
@@ -15,7 +24,7 @@ export function sample(object: any): any {
         // sample head, middle, tail
         if (!object.length) return [];
         const uniqueSamples = threePointSampleArrayItems(object);
-        return uniqueSamples.map(sample);
+        return uniqueSamples.map((item) => sample(item, options));
       } else {
         return Object.fromEntries(
           Object.entries(object).map(([key, value]) => {
@@ -24,7 +33,7 @@ export function sample(object: any): any {
         );
       }
     case "string":
-      return trimTextIfOverflow(48)(object); // for reference: uuid is 36 char long
+      return trimTextIfOverflow(maxTextLength)(object); // for reference: uuid is 36 char long
     default:
       return object;
   }
