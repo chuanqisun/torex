@@ -1,8 +1,8 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { getType, type Options } from "..";
+import { getType, type TypeOptions } from "..";
 
-function assertReflection(input: any, options: Options, output: string) {
+function assertReflection(input: any, options: TypeOptions, output: string) {
   assert.strictEqual(getType(input, options), output.trim());
 }
 

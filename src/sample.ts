@@ -12,6 +12,10 @@ export interface SampleOptions {
   maxTextLength?: number;
 }
 
+export function getSample(input: any, options?: SampleOptions): string {
+  return JSON.stringify(sample(input, options), null, 2);
+}
+
 export function sample(object: any, options?: SampleOptions): any {
   const { maxTextLength = 48 } = { ...options };
 
