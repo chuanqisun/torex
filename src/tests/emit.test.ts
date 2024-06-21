@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { emit, type EmitConfig } from "../emit";
-import { parse } from "../parse";
+import { emit, type EmitConfig } from "../compiler/emit";
+import { parse } from "../compiler/parse";
 
 describe("emit", () => {
   it("primitives", () => {

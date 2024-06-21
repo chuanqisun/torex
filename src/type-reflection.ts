@@ -1,5 +1,5 @@
-import { emit } from "./emit";
-import { parse } from "./parse";
+import { emit } from "./compiler/emit";
+import { parse } from "./compiler/parse";
 
 export interface TypeOptions {
   rootName?: string;

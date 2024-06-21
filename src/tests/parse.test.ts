@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { parse, type TypeNode } from "../parse";
+import { parse, type TypeNode } from "../compiler/parse";
 
 describe("parse", () => {
   it("primitives", () => {

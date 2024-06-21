@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { treeWalk } from "../tree-walk";
+import { treeWalk } from "../compiler/tree-walk";
 
 describe("treeWalk", () => {
   it("shallow walk", () => {

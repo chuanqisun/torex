@@ -1,4 +1,6 @@
-export * from "./emit";
-export * from "./parse";
-export * from "./sample";
+export * from "./compiler/emit";
+export * from "./compiler/parse";
+export * from "./utils/complexity";
+export * from "./utils/sample";
+
 export * from "./type-reflection";

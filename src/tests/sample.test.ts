@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { fragments, getSample, sample, strategy, stringifySample } from "../sample";
+import { fragments, getSample, sample, strategy, stringifySample } from "../utils/sample";
 
 describe("sample", () => {
   it("sample empty array", () => {
