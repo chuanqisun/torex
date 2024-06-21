@@ -1,12 +1,13 @@
 {
   "name": "torex",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Typed Object Reflection",
   "main": "src/index.ts",
   "homepage": "https://github.com/chuanqisun/torex",
   "types": "src/index.ts",
   "scripts": {
-    "test": "tsx ./src/index.test.ts"
+    "test": "tsx ./src/index.test.ts",
+    "test:watch": "tsx --watch ./src/index.test.ts"
   },
   "repository": {
     "type": "git",
