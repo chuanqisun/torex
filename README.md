@@ -59,7 +59,3 @@ interface IMyObject {
 }
 */
 ```
-
-## Limitations
-
-Only support TypeScript bundlers (e.g. vite, esbuild). Vanilla js is not distributed in the package
