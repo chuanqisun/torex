@@ -1,3 +1,7 @@
+# v1.0.1
+
+- Fixed: Path resolution issue in multi-file dist
+
 # v1.0.0
 
 - Initial stable release
