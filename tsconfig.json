@@ -11,7 +11,8 @@
     "verbatimModuleSyntax": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
-    "declaration": true
+    "declaration": true,
+    "emitDeclarationOnly": true
   },
   "include": ["src"]
 }

@@ -16,7 +16,7 @@
   "types": "./dist/index.d.ts",
   "homepage": "https://github.com/chuanqisun/torex",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && esbuild  --bundle ./src/index.ts --outfile=./dist/index.js --format=esm",
     "test": "tsx ./src/index.test.ts",
     "test:watch": "tsx --watch ./src/index.test.ts"
   },
@@ -29,6 +29,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.12.10",
+    "esbuild": "^0.23.0",
     "tsx": "^4.9.3",
     "typescript": "^5.5.3"
   }
