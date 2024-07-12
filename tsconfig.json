@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": ["ESNext"],
     "skipLibCheck": true,
     "strict": true,
     "module": "ESNext",
@@ -10,7 +10,8 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "allowSyntheticDefaultImports": true,
-    "noEmit": true
+    "outDir": "dist",
+    "declaration": true
   },
   "include": ["src"]
 }
