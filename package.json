@@ -1,6 +1,6 @@
 {
   "name": "torex",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Typed Object Reflection",
   "type": "module",
   "files": [
