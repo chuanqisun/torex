@@ -8,6 +8,10 @@ describe("emit", () => {
     assertEmitter(1, `type Root = number;`);
   });
 
+  it("primitives with export", () => {
+    assertEmitter(1, `export type Root = number;`, { exportRoot: true });
+  });
+
   it("empty objects", () => {
     assertEmitter({}, `type Root = Record<string, any>;`);
     assertEmitter([], `type Root = any[];`);
@@ -18,6 +22,10 @@ describe("emit", () => {
     assertEmitter([1, true, "string"], `type Root = (number | boolean | string)[];`);
   });
 
+  it("simple arrays with export", () => {
+    assertEmitter([1], `export type Root = number[];`, { exportRoot: true });
+  });
+
   it("simple objects", () => {
     assertEmitter(
       { a: 1 },
@@ -25,6 +33,17 @@ describe("emit", () => {
 interface IRoot {
   a: number;
 }`
+    );
+  });
+
+  it("simple objects with export", () => {
+    assertEmitter(
+      { a: 1 },
+      `
+export interface IRoot {
+  a: number;
+}`,
+      { exportRoot: true }
     );
   });
 
@@ -81,6 +100,22 @@ type Root = (string | IRootItem)[];
 interface IRootItem {
   a: number;
 }`
+    );
+  });
+
+  it("complex objects with export", () => {
+    assertEmitter(
+      { a: { x: 1 } },
+      `
+export interface IRoot {
+  a: IRootA;
+}
+
+interface IRootA {
+  x: number;
+}
+`,
+      { exportRoot: true }
     );
   });
 
@@ -210,7 +245,7 @@ interface MySpecialType {
 
 function assertEmitter(input: any, expected: string, config?: Partial<EmitConfig>) {
   const jsonTypeNode = parse(input);
-  const declarations = emit(jsonTypeNode, { rootName: "Root", interfacePrefix: "I", ...config });
+  const declarations = emit(jsonTypeNode, { rootName: "Root", interfacePrefix: "I", exportRoot: false, ...config });
 
   try {
     assert.deepEqual(declarations.trim(), expected.trim());

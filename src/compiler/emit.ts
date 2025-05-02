@@ -2,6 +2,7 @@ import { type TypeNode } from "./parse";
 
 export interface EmitConfig {
   rootName: string;
+  exportRoot: boolean;
   interfacePrefix: string;
 }
 
@@ -20,7 +21,7 @@ export function emit(node: TypeNode, config: EmitConfig): string {
   const { rootName, interfacePrefix } = config;
   const pathNameGenerator = memoize(getPathNameGenerator(new Set()));
 
-  const { declarations } = getIdentifiers([rootName], node, { isRoot: true, interfacePrefix, pathNameGenerator });
+  const { declarations } = getIdentifiers([rootName], node, { isRoot: true, interfacePrefix, pathNameGenerator, exportRoot: config.exportRoot });
 
   return declarations.join("\n\n");
 }
@@ -28,6 +29,7 @@ export function emit(node: TypeNode, config: EmitConfig): string {
 type Path = (0 | string)[];
 interface GetIdentifiersConfig {
   isRoot?: boolean;
+  exportRoot?: boolean;
   pathNameGenerator: (path: Path, prefix?: string) => string;
   interfacePrefix: string;
 }
@@ -99,6 +101,7 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
     const objectLiteral = `{\n${keyedChildEntries.map(([k, v]) => `  ${renderKey(k)}${node.requiredKeys?.has(k) ? "" : "?"}: ${v};`).join("\n")}\n}`;
 
     const declaration = renderDeclaration({
+      isExported: isRoot && config.exportRoot,
       lValue: config.pathNameGenerator(path, config.interfacePrefix),
       rValue: renderIdentifiers([objectLiteral]),
       isInterface: true,
@@ -108,9 +111,10 @@ function getIdentifiers(path: Path, node: TypeNode, config: GetIdentifiersConfig
     declarations.unshift(declaration);
   } else if (identifiers.length > 0 && isRoot) {
     // Root needs to collect and render any identifiers from any child level
-    // HACK: render interface if and only if identifer is a single object
+    // HACK: render interface if and only if identifier is a single object
     const isInterface = identifiers.length === 1 && identifiers[0].startsWith("{");
     const declaration = renderDeclaration({
+      isExported: config.exportRoot,
       lValue: config.pathNameGenerator(path, isInterface ? config.interfacePrefix : ""),
       rValue: renderIdentifiers(identifiers),
       isInterface,
@@ -129,9 +133,11 @@ interface DeclarationConfig {
   lValue: string;
   rValue: string;
   isInterface?: boolean;
+  isExported?: boolean;
 }
 function renderDeclaration(config: DeclarationConfig): string {
-  return config.isInterface ? `interface ${config.lValue} ${config.rValue}` : `type ${config.lValue} = ${config.rValue};`;
+  const exportPrefix = config.isExported ? "export " : "";
+  return config.isInterface ? `${exportPrefix}interface ${config.lValue} ${config.rValue}` : `${exportPrefix}type ${config.lValue} = ${config.rValue};`;
 }
 
 function renderIdentifiers(types: string[]): string {
