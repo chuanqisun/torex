@@ -2,6 +2,8 @@
 
 **Typed Object Reflection**: Infer TypeScript interface from JSON
 
+[Live demo](https://chuanqisun.github.io/tools/json-to-typescript/)
+
 ## Get started
 
 Install
